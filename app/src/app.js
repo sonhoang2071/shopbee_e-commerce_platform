@@ -14,6 +14,7 @@ app.use(express.json());
 //init  database
 const Shop = require("./models/shop.model");
 const PersonalToken = require("./models/personal_token.model");
+const UsedRefreshToken = require("./models/used_refresh_token");
 
 db.sync()
     .then((result) => {

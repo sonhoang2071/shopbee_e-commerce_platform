@@ -7,8 +7,49 @@ const { getInformationData } = require("../utils/metadata.util");
 const {
     BadRequestError,
     ConflictRequestError,
+    UnauthorizedRequestError,
 } = require("../errors/error.response");
+const { findByEmail } = require("./shop.service");
 class AuthService {
+    static singIn = async ({ email, password, refreshToken = null }) => {
+        const foundShop = await findByEmail({ email });
+        if (!foundShop) {
+            throw new BadRequestError("Shop not registered");
+        }
+        const match = await bcrypt.compare(password, foundShop.password);
+        if (!match) {
+            throw new UnauthorizedRequestError("Invalid value");
+        }
+        const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
+            modulusLength: 4096,
+            publicKeyEncoding: {
+                type: "pkcs1",
+                format: "pem",
+            },
+            privateKeyEncoding: {
+                type: "pkcs1",
+                format: "pem",
+            },
+        });
+        const tokens = await createTokensPair(
+            { shopId: foundShop.id, email },
+            publicKey,
+            privateKey
+        );
+
+        const check = await PersonalTokenService.createPersonalToken({
+            shopId: foundShop.id,
+            publicKey: publicKey,
+            refreshToken: tokens.refreshToken,
+        });
+        return {
+            shop: getInformationData({
+                fields: ["name", "email"],
+                object: foundShop,
+            }),
+            tokens,
+        };
+    };
     static signUp = async ({ name, email, password }) => {
         const holdShop = await Shop.findOne({ where: { email: email } });
         if (holdShop) {
@@ -21,46 +62,23 @@ class AuthService {
             password: hashPassword,
         });
         if (newShop) {
-            const { privateKey, publicKey } = crypto.generateKeyPairSync(
-                "rsa",
-                {
-                    modulusLength: 4096,
-                    publicKeyEncoding: {
-                        type: "pkcs1",
-                        format: "pem",
-                    },
-                    privateKeyEncoding: {
-                        type: "pkcs1",
-                        format: "pem",
-                    },
-                }
-            );
-            const publicKeyString =
-                await PersonalTokenService.createPersonalToken({
-                    shopId: newShop.id,
-                    publicKey: publicKey,
-                });
-            if (!publicKeyString) {
-                throw new ConflictRequestError("CreatePersonalToken is fault");
-            }
-            const tokens = await createTokensPair(
-                { shopId: newShop.id, email },
-                publicKey,
-                privateKey
-            );
             return {
                 shop: getInformationData({
                     fields: ["name", "email"],
                     object: newShop,
                 }),
-                tokens,
             };
-            return publicKeyString;
         }
-        return {
-            code: 200,
-            message: "error",
-        };
+        throw new BadRequestError("Bad Request");
+    };
+
+    static logout = async (token) => {
+        console.log(token);
+        const removeToken = await PersonalTokenService.removeTokenById({
+            id: token.id,
+        });
+
+        return removeToken;
     };
 }
 

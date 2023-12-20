@@ -15,7 +15,7 @@ const PersonalToken = sequelize.define("personal_token", {
         allowNull: false,
     },
     refreshToken:  {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
 
     }
 });
