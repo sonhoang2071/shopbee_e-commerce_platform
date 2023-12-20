@@ -1,16 +1,12 @@
+const { CreatedRequestSuccess } = require("../errors/success.response");
 const AuthService = require("../services/auth.service");
 
 class AuthController {
     signUp = async (req, res, next) => {
-        try {
-            console.log(`signUp::`, req.body);
-            const result = await AuthService.signUp(req.body);
-            return res.status(200).json({
-                result
-            });
-        } catch (error) {
-            next(error);
-        }
+        new CreatedRequestSuccess({
+            message: "SignUp Successfully",
+            metadata: await AuthService.signUp(req.body),
+        }).send(res);
     };
 }
 
