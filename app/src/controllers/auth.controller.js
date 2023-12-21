@@ -23,6 +23,16 @@ class AuthController {
             metadata: await AuthService.logout(req.token),
         }).send(res);
     };
+    handlerRefreshToken = async (req, res, next) => {
+        new CreatedRequestSuccess({
+            message: "RefreshToken Successfully",
+            metadata: await AuthService.handlerRefreshToken({
+                refreshToken: req.refreshToken,
+                shop: req.shop,
+                token: req.token,
+            }),
+        }).send(res);
+    };
 }
 
 module.exports = new AuthController();

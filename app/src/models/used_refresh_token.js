@@ -10,10 +10,10 @@ const UsedRefreshToken = sequelize.define("used_refresh_token", {
         allowNull: false,
         primaryKey: true,
     },
-    token:  {
-        type: Sequelize.STRING,
-
-    }
+    token: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+    },
 });
 UsedRefreshToken.belongsTo(Shop);
 
