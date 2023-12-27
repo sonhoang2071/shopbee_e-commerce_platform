@@ -1,19 +1,14 @@
 const Sequelize = require("sequelize");
 
 const sequelize = require("../databases");
-const Shop = require("./shop.model");
 
-const UsedRefreshToken = sequelize.define("used_refresh_token", {
+const VariantProductValue = sequelize.define("variant_product_value", {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true,
     },
-    token: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-    },
 });
 
-module.exports = UsedRefreshToken;
+module.exports = VariantProductValue;

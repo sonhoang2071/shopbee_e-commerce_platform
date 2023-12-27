@@ -1,19 +1,15 @@
 const Sequelize = require("sequelize");
 
 const sequelize = require("../databases");
-const Shop = require("./shop.model");
 
-const UsedRefreshToken = sequelize.define("used_refresh_token", {
+const Product = sequelize.define("product", {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true,
     },
-    token: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-    },
+    name: Sequelize.STRING,
 });
 
-module.exports = UsedRefreshToken;
+module.exports = Product;

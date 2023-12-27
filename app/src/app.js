@@ -15,6 +15,32 @@ app.use(express.json());
 const Shop = require("./models/shop.model");
 const PersonalToken = require("./models/personal_token.model");
 const UsedRefreshToken = require("./models/used_refresh_token");
+const Brand = require("./models/brand.model");
+const Product = require("./models/product.model");
+const Category = require("./models/category.model");
+const BrandCategory = require("./models/brand_category.model");
+const VariantProduct = require("./models/variant_product.model");
+const Attribute = require("./models/attribute.model");
+const Value = require("./models/value.model");
+const CategoryValue = require("./models/category_value.model");
+const ProductValue = require("./models/product_value.model");
+const VariantProductValue = require("./models/variant_product_value.model");
+
+PersonalToken.belongsTo(Shop);
+UsedRefreshToken.belongsTo(Shop);
+Product.belongsTo(Shop);
+Product.belongsTo(Brand);
+Product.belongsTo(Category);
+Category.belongsToMany(Brand, { through: BrandCategory });
+Brand.belongsToMany(Category, { through: BrandCategory });
+VariantProduct.belongsTo(Product);
+Value.belongsTo(Attribute);
+Category.belongsToMany(Value, { through: CategoryValue });
+Value.belongsToMany(Category, { through: CategoryValue });
+Product.belongsToMany(Value, { through: ProductValue });
+Value.belongsToMany(Product, { through: ProductValue });
+VariantProduct.belongsToMany(Value, { through: VariantProductValue });
+Value.belongsToMany(VariantProduct, { through: VariantProductValue });
 
 db.sync()
     .then((result) => {
